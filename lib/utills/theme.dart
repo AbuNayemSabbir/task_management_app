@@ -25,9 +25,8 @@ class ThemeClass {
         onErrorContainer: Color(0xFF7C2104),
       ),
 
-      fontFamily: GoogleFonts.publicSans().fontFamily,
+      fontFamily: GoogleFonts.poppins().fontFamily,
       primaryColor: AppUTills.primaryColor,
-
       scaffoldBackgroundColor: const Color(0xFFE5E5E5),
   );
 

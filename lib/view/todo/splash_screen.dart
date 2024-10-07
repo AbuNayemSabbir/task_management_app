@@ -40,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 20),
             Text(
               'Daily To-Do App',
-              style: GoogleFonts.sigmarOne(
+              style: GoogleFonts.sigmar(
                 textStyle: const TextStyle(
                   fontSize: 21,
                   fontWeight: FontWeight.bold,
