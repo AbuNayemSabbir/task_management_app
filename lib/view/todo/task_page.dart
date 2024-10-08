@@ -1,129 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_app/controller/task_controller.dart';
-import 'package:intl/intl.dart';
-import 'package:todo_app/model/task_model.dart';
+import 'package:todo_app/view/todo/add_task_page.dart';
 
-class AddTaskPage extends StatelessWidget {
-  final taskController = Get.put(TaskController());
+class TaskPage extends StatelessWidget {
+  TaskPage({super.key});
 
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController detailsController = TextEditingController();
-  final Rx<DateTime> selectedDueDate = DateTime.now().obs;
+  final TextEditingController _titleController = TextEditingController();
+  final TaskController _taskController = Get.put(TaskController());
 
-  AddTaskPage({super.key});
+  final RxBool isTitleSaved = false.obs;
+  int? _listId;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            Get.back(); // Navigate back
-          },
-        ),
-        title: Obx(() => Text('Tasks (${taskController.tasks.length})')),
+        title: const Text('Create New List'),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Obx(() {
-              return ListView.builder(
-                itemCount: taskController.tasks.length,
-                itemBuilder: (context, index) {
-                  var task = taskController.tasks[index];
-                  return ListTile(
-                    leading: Checkbox(
-                      value: task.isCompleted.value,
-                      onChanged: (value) {
-                        taskController.toggleTaskCompletion(index);
-                      },
-                    ),
-                    title: Text(task.title,
-                        style: TextStyle(
-                            decoration: task.isCompleted.value
-                                ? TextDecoration.lineThrough
-                                : TextDecoration.none)),
-                    subtitle: Text(DateFormat.yMMMd().format(task.dueDate)),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        taskController.removeTask(task.id!);
-                      },
-                    ),
-                  );
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title input field (plain text, no underline or box)
+            Obx(
+                  () => isTitleSaved.value
+                  ? Text(
+                'Title: ${_titleController.text}',
+                style: const TextStyle(
+                    fontSize: 24, fontWeight: FontWeight.bold),
+              )
+                  : TextField(
+                controller: _titleController,
+                style: const TextStyle(fontSize: 24),
+                decoration: const InputDecoration(
+                  hintText: 'Enter List Title',
+                  border: InputBorder.none, // No underline or box
+                ),
+                onSubmitted: (value) async {
+                  if (value.isNotEmpty) {
+                    // Call the save title function on submission
+                    _listId = await _taskController.addList(value);
+                    isTitleSaved.value = true;
+                  }
                 },
-              );
-            }),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: titleController,
-                  decoration: InputDecoration(
-                    hintText: "Task title",
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(height: 8.0),
-                TextField(
-                  controller: detailsController,
-                  decoration: InputDecoration(
-                    hintText: "Task details",
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                SizedBox(height: 8.0),
-                Obx(() => Row(
-                  children: [
-                    Text(
-                      "Due Date: ${DateFormat.yMMMd().format(selectedDueDate.value)}",
-                    ),
-                    Spacer(),
-                    IconButton(
-                      icon: Icon(Icons.calendar_today),
-                      onPressed: () async {
-                        DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: selectedDueDate.value,
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime(2101),
-                        );
-                        if (pickedDate != null) {
-                          selectedDueDate.value = pickedDate;
-                        }
-                      },
-                    ),
-                  ],
-                )),
-                SizedBox(height: 8.0),
-                ElevatedButton.icon(
-                  icon: Icon(Icons.add),
-                  label: Text("Add Task"),
-                  onPressed: () {
-                    if (titleController.text.isNotEmpty &&
-                        detailsController.text.isNotEmpty) {
-                      TaskModel task = TaskModel(
-                        title: titleController.text,
-                        details: detailsController.text,
-                        dueDate: selectedDueDate.value,
-                      );
-                      taskController.addTask(task);
-                      titleController.clear();
-                      detailsController.clear();
-                    } else {
-                      Get.snackbar("Error", "All fields are required",
-                          snackPosition: SnackPosition.BOTTOM);
-                    }
-                  },
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+            Obx(
+                  () => isTitleSaved.value
+                  ? ElevatedButton(
+                onPressed: () {
+                  if (_listId != null) {
+                    Get.to(() => AddTaskPage(listId: _listId!)); // Pass the listId here
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                ),
+                child: const Text(
+                  'Add Task',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              )
+                  : ElevatedButton(
+                onPressed: () async {
+                  if (_titleController.text.isNotEmpty) {
+                    _listId = await _taskController
+                        .addList(_titleController.text);
+                    isTitleSaved.value = true;
+                  }
+                },
+                child: const Text('Save Title'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

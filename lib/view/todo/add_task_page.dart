@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:todo_app/controller/task_controller.dart';
 import 'package:intl/intl.dart';
+import 'package:todo_app/controller/task_controller.dart';
 import 'package:todo_app/model/task_model.dart';
 
 class AddTaskPage extends StatelessWidget {
+  final int listId; // Accept the listId as a parameter
   final taskController = Get.put(TaskController());
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController detailsController = TextEditingController();
   final Rx<DateTime> selectedDueDate = DateTime.now().obs;
 
-  AddTaskPage({super.key});
+  AddTaskPage({super.key, required this.listId}); // Constructor accepts listId
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +34,8 @@ class AddTaskPage extends StatelessWidget {
                 itemCount: taskController.tasks.length,
                 itemBuilder: (context, index) {
                   var task = taskController.tasks[index];
+                  if (task.listId != listId) return const SizedBox.shrink(); // Filter tasks by listId
+
                   return ListTile(
                     leading: Checkbox(
                       value: task.isCompleted.value,
@@ -110,6 +113,7 @@ class AddTaskPage extends StatelessWidget {
                         title: titleController.text,
                         details: detailsController.text,
                         dueDate: selectedDueDate.value,
+                        listId: listId, // Save the listId
                       );
                       taskController.addTask(task);
                       titleController.clear();

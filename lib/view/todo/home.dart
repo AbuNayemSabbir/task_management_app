@@ -63,7 +63,7 @@ class HomePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.toNamed(AppRoutes.addTask);
+          Get.toNamed(AppRoutes.task);
         },
         backgroundColor: AppUTills.primaryColor,
         child: const Icon(Icons.add),
