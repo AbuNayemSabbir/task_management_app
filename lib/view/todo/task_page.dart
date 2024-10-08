@@ -8,79 +8,107 @@ class TaskPage extends StatelessWidget {
 
   final TextEditingController _titleController = TextEditingController();
   final TaskController _taskController = Get.put(TaskController());
-
+  final int? listId = Get.arguments;
   final RxBool isTitleSaved = false.obs;
   int? _listId;
+  final RxBool isTitleEntered = false.obs;
 
   @override
   Widget build(BuildContext context) {
+    _titleController.addListener(() {
+      isTitleEntered.value = _titleController.text.isNotEmpty;
+    });
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create New List'),
+        title: const Text('Lists'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title input field (plain text, no underline or box)
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (listId != null) ...[
+            Text(
+              'Title: ${_taskController.getListTitle(listId!)}',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const Spacer(),
+            ElevatedButton(
+                      onPressed: () {
+                        if (_listId != null) {
+                          Get.to(() => AddTaskPage(
+                              listId: _listId!));
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                      ),
+                      child: const Text(
+                        'Add Task',
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                    )
+          ] else ...[
             Obx(
-                  () => isTitleSaved.value
+              () => isTitleSaved.value
                   ? Text(
-                'Title: ${_titleController.text}',
-                style: const TextStyle(
-                    fontSize: 24, fontWeight: FontWeight.bold),
-              )
+                      'Title: ${_titleController.text}',
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
+                    )
                   : TextField(
-                controller: _titleController,
-                style: const TextStyle(fontSize: 24),
-                decoration: const InputDecoration(
-                  hintText: 'Enter List Title',
-                  border: InputBorder.none, // No underline or box
-                ),
-                onSubmitted: (value) async {
-                  if (value.isNotEmpty) {
-                    // Call the save title function on submission
-                    _listId = await _taskController.addList(value);
-                    isTitleSaved.value = true;
-                  }
-                },
-              ),
+                      controller: _titleController,
+                      style: const TextStyle(fontSize: 24),
+                      decoration: const InputDecoration(
+                        hintText: 'Untitled List()',
+                        border: InputBorder.none,
+                      ),
+                      onSubmitted: (value) async {
+                        if (value.isNotEmpty) {
+                          _listId = await _taskController.addList(value);
+                          isTitleSaved.value = true;
+                        }
+                      },
+                    ),
             ),
             const SizedBox(height: 20),
+            const Spacer(),
             Obx(
-                  () => isTitleSaved.value
-                  ? ElevatedButton(
-                onPressed: () {
-                  if (_listId != null) {
-                    Get.to(() => AddTaskPage(listId: _listId!)); // Pass the listId here
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
-                ),
-                child: const Text(
-                  'Add Task',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              )
-                  : ElevatedButton(
-                onPressed: () async {
-                  if (_titleController.text.isNotEmpty) {
-                    _listId = await _taskController
-                        .addList(_titleController.text);
-                    isTitleSaved.value = true;
-                  }
-                },
-                child: const Text('Save Title'),
-              ),
-            ),
+              () => isTitleEntered.value
+                  ? isTitleSaved.value
+                      ? ElevatedButton(
+                          onPressed: () {
+                            if (_listId != null) {
+                              Get.to(() => AddTaskPage(listId: _listId!));
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
+                          ),
+                          child: const Text(
+                            'Add Task',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                        )
+                      : ElevatedButton(
+                          onPressed: () async {
+                            if (_titleController.text.isNotEmpty) {
+                              _listId = await _taskController.addList(_titleController.text);
+                              isTitleSaved.value = true;
+                            }
+                          },
+                          child: const Text('Save Title'),
+                        )
+                  : const SizedBox.shrink(),
+            )
           ],
-        ),
+        ]),
       ),
     );
   }

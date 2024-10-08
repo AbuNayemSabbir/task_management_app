@@ -76,4 +76,11 @@ class TaskController extends GetxController {
     await _database.update('tasks', task.toMap(), where: 'id = ?', whereArgs: [task.id]);
     tasks[index] = task;
   }
+  String getListTitle(int listId) {
+    var list = lists.firstWhere(
+          (list) => list.id == listId,
+    );
+
+    return list.title ?? 'Unknown List';
+  }
 }

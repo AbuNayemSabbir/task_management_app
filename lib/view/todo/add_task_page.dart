@@ -12,7 +12,7 @@ class AddTaskPage extends StatelessWidget {
   final TextEditingController detailsController = TextEditingController();
   final Rx<DateTime> selectedDueDate = DateTime.now().obs;
 
-  AddTaskPage({super.key, required this.listId}); // Constructor accepts listId
+  AddTaskPage({super.key, required this.listId});
 
   @override
   Widget build(BuildContext context) {
