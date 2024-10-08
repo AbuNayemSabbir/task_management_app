@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:todo_app/routes/app_routes.dart';
 import 'package:todo_app/utills/app_utills.dart';
 
 class HomePage extends StatelessWidget {
@@ -62,8 +63,7 @@ class HomePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to Add Task Page
-          Get.toNamed('/addTask');
+          Get.toNamed(AppRoutes.addTask);
         },
         backgroundColor: AppUTills.primaryColor,
         child: const Icon(Icons.add),

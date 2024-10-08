@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -16,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    //_navigateToHome();
+    _navigateToHome();
   }
 
   _navigateToHome() async {
@@ -31,11 +32,10 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset(
-              'assets/images/task_logo.svg',
-              height: 100,
-              width: 100,
-              color: Colors.black,
+            Image.asset(
+              'assets/images/task_logo.png',
+              height: 130,
+              width: 130,
             ),
             const SizedBox(height: 20),
             Text(

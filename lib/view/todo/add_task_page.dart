@@ -47,7 +47,7 @@ class AddTaskPage extends StatelessWidget {
                                 : TextDecoration.none)),
                     subtitle: Text(DateFormat.yMMMd().format(task.dueDate)),
                     trailing: IconButton(
-                      icon: Icon(Icons.delete),
+                      icon: const Icon(Icons.delete),
                       onPressed: () {
                         taskController.removeTask(task.id!);
                       },
@@ -63,33 +63,33 @@ class AddTaskPage extends StatelessWidget {
               children: [
                 TextField(
                   controller: titleController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Task title",
                     border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 TextField(
                   controller: detailsController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Task details",
                     border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 Obx(() => Row(
                   children: [
                     Text(
                       "Due Date: ${DateFormat.yMMMd().format(selectedDueDate.value)}",
                     ),
-                    Spacer(),
+                    const Spacer(),
                     IconButton(
-                      icon: Icon(Icons.calendar_today),
+                      icon: const Icon(Icons.calendar_today),
                       onPressed: () async {
                         DateTime? pickedDate = await showDatePicker(
                           context: context,
                           initialDate: selectedDueDate.value,
-                          firstDate: DateTime.now(),
+                          firstDate: DateTime(2024),
                           lastDate: DateTime(2101),
                         );
                         if (pickedDate != null) {
@@ -99,10 +99,10 @@ class AddTaskPage extends StatelessWidget {
                     ),
                   ],
                 )),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 ElevatedButton.icon(
-                  icon: Icon(Icons.add),
-                  label: Text("Add Task"),
+                  icon: const Icon(Icons.add),
+                  label: const Text("Add Task"),
                   onPressed: () {
                     if (titleController.text.isNotEmpty &&
                         detailsController.text.isNotEmpty) {

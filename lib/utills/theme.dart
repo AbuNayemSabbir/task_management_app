@@ -27,7 +27,7 @@ class ThemeClass {
 
       fontFamily: GoogleFonts.poppins().fontFamily,
       primaryColor: AppUTills.primaryColor,
-      scaffoldBackgroundColor: const Color(0xFFE5E5E5),
+      scaffoldBackgroundColor: const Color(0xFFFFFFFF),
   );
 
 }
