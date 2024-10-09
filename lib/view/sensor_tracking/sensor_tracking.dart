@@ -22,12 +22,13 @@ class _GraphPageState extends State<GraphPage> {
   }
 
   void _startAccelerometerStream() {
-    accelerometerEvents.listen((AccelerometerEvent event) {
+    accelerometerEventStream().listen((AccelerometerEvent event) {
       setState(() {
         accelerometerData.add(event);
       });
     });
   }
+
 
   void _startLocationStream() async {
     geo.LocationPermission permission = await geo.Geolocator.requestPermission();
@@ -41,6 +42,7 @@ class _GraphPageState extends State<GraphPage> {
       });
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
