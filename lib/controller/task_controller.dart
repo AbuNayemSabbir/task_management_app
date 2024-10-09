@@ -30,6 +30,31 @@ class TaskController extends GetxController {
     );
     loadLists();
   }
+// Method to update due date
+  Future<void> updateDueDate(int taskId, DateTime newDueDate) async {
+    await _database.update(
+      'tasks',
+      {'dueDate': newDueDate.toIso8601String()},
+      where: 'id = ?',
+      whereArgs: [taskId],
+    );
+    loadTasks();
+  }
+
+// Method to update description
+  Future<void> updateDescription(int taskId, String details) async {
+    await _database.update(
+      'tasks',
+      {'details': details},
+      where: 'id = ?',
+      whereArgs: [taskId],
+    );
+    loadTasks();
+  }
+  // Method to fetch a task by its ID
+  TaskModel getTaskById(int taskId) {
+    return tasks.firstWhere((task) => task.id == taskId, orElse: () => throw Exception("Task not found"));
+  }
 
   Future<void> loadLists() async {
     final List<Map<String, dynamic>> listMaps = await _database.query('lists');

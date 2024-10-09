@@ -33,10 +33,8 @@ class TaskPage extends StatelessWidget {
             const Spacer(),
             ElevatedButton(
                       onPressed: () {
-                        if (_listId != null) {
                           Get.to(() => AddTaskPage(
-                              listId: _listId!));
-                        }
+                              listId: listId!));
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
