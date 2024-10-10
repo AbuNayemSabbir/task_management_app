@@ -27,7 +27,7 @@ class TaskController extends GetxController {
     // Check for overdue tasks immediately
     checkForDueTasks();
 
-    // Periodically check every 10 seconds for testing
+    // Periodically check every 24 hours for testing
     Timer.periodic(const Duration(hours: 24), (timer) {
       checkForDueTasks();
     });
@@ -147,12 +147,8 @@ class TaskController extends GetxController {
 
   void checkForDueTasks() {
     final now = DateTime.now();
-    print('now time: $now');
-
     for (var task in tasks) {
       final dueDate = task.dueDate;
-      print('due time: $dueDate');
-
       if (dueDate.isBefore(now) && !task.isCompleted.value) {
         // Show notification for overdue tasks
         notificationService.showNotification(
@@ -163,5 +159,4 @@ class TaskController extends GetxController {
       }
     }
   }
-
 }
