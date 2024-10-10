@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:todo_app/view/main_page.dart';
 import 'package:todo_app/view/sensor_tracking/sensor_tracking.dart';
-import 'package:todo_app/view/todo/add_task_page.dart';
 import 'package:todo_app/view/todo/home.dart';
 import 'package:todo_app/view/todo/splash_screen.dart';
 import 'package:todo_app/view/todo/task_page.dart';
@@ -18,9 +17,9 @@ class AppRoutes {
 
 
   static final List<GetPage> routes = [
-    GetPage(name: initial, page: () => const MainPage()),
+    GetPage(name: initial, page: () => const SplashScreen()),
+    GetPage(name: main, page: () => const MainPage()),
     GetPage(name: home, page: () =>  const HomePage()),
-    GetPage(name: splash, page: () =>  const SplashScreen()),
     GetPage(name: task, page: () =>   TaskPage()),
     GetPage(name: sensor, page: () =>   const GraphPage()),
 

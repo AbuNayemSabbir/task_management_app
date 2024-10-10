@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/utills/app_utills.dart';
+import 'package:todo_app/utills/app_color.dart';
 
 class CustomElevatedButton extends StatelessWidget {
   final String title;
@@ -13,7 +13,7 @@ class CustomElevatedButton extends StatelessWidget {
     required this.title,
     required this.onPressed,
     this.isLoading = false,
-    this.color = AppUTills.primaryColor,
+    this.color = AppColors.primaryColor,
     this.textColor = Colors.black,
     this.width = double.infinity,
   });

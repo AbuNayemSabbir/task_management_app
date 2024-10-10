@@ -1,33 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:todo_app/utills/app_utills.dart';
-
-
+import 'package:todo_app/utills/app_color.dart';
 
 class ThemeClass {
 
   static ThemeData lightTheme = ThemeData(
 
       colorScheme:   const ColorScheme.light(
-        primary: AppUTills.primaryColor,
+        primary: AppColors.primaryColor,
         onPrimary: Color(0xFFE4FEFE),
         primaryContainer: Color(0xFFB0FFFF),
         onPrimaryContainer: Color(0xFF029494),
 
-        secondary: AppUTills.secondaryColor,
-        onSecondary: Color(0xFFF1EBFC),
-        secondaryContainer: Color(0xFFB189F1),
-        onSecondaryContainer: Color(0xFF3C117E),
+        secondary: AppColors.secondaryColor,
 
         error: Color(0xFFF43B00),
-        onError: Color(0xFFFEC3B1),
-        errorContainer:Color(0xFFFF8159),
-        onErrorContainer: Color(0xFF7C2104),
       ),
 
       fontFamily: GoogleFonts.poppins().fontFamily,
-      primaryColor: AppUTills.primaryColor,
-      scaffoldBackgroundColor: const Color(0xFFFFFFFF),
+      primaryColor: AppColors.primaryColor,
+      scaffoldBackgroundColor: const Color(0xFFF8F8F8),
+
   );
 
 }

@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:todo_app/controller/task_controller.dart';
 import 'package:todo_app/routes/app_routes.dart';
-import 'package:todo_app/utills/app_utills.dart';
+import 'package:todo_app/utills/app_color.dart';
 import 'package:todo_app/view/helper_widget/custom_button.dart';
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  final TaskController taskController = Get.put(TaskController());
+
+  @override
+  void initState() {
+    super.initState();
+    taskController.checkForDueTasks();
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -20,7 +34,7 @@ class MainPage extends StatelessWidget {
                   height: 76,
                   child: CustomElevatedButton(
                     onPressed: () {
-                      Get.toNamed(AppRoutes.splash);
+                      Get.toNamed(AppRoutes.home);
                     },
                     title: 'A To-Do List',
                   ),
@@ -29,7 +43,7 @@ class MainPage extends StatelessWidget {
                 SizedBox(
                   height: 76,
                   child: CustomElevatedButton(
-                    color: AppUTills.secondaryColor,
+                    color: AppColors.secondaryColor,
                     onPressed: () {
                       Get.toNamed(AppRoutes.sensor);
                     },

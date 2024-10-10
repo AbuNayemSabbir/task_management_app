@@ -2,102 +2,137 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_app/controller/task_controller.dart';
+import 'package:todo_app/utills/app_color.dart';
+import 'package:todo_app/view/helper_widget/helper_utills.dart';
 
-class TaskOptionsPage extends StatelessWidget {
+class TaskOptionsPage extends StatefulWidget {
   final int taskId;
   final DateTime dueDate;
+  final bool isCompleted;
 
-  TaskOptionsPage({required this.taskId, required this.dueDate});
+  TaskOptionsPage({super.key, required this.taskId, required this.dueDate, required this.isCompleted});
 
+  @override
+  State<TaskOptionsPage> createState() => _TaskOptionsPageState();
+}
+
+class _TaskOptionsPageState extends State<TaskOptionsPage> {
   final TaskController taskController = Get.find();
+
   final TextEditingController noteController = TextEditingController();
+
   final Rx<DateTime> selectedDueDate = DateTime.now().obs;
 
   @override
+  void initState() {
+    super.initState();
+    taskController.checkForDueTasks();
+  }
+  @override
   Widget build(BuildContext context) {
-    selectedDueDate.value = dueDate; // Initialize with the existing due date
+    selectedDueDate.value = widget.dueDate;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Task $taskId'),
+        title: Text('Task ${widget.taskId}'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
-            Get.back(); // Navigate back
+            Get.back();
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Remind me option (Placeholder for now)
-            ListTile(
-              leading: Icon(Icons.notifications_none),
-              title: Text('Remind Me'),
-            ),
-            const SizedBox(height: 16),
-
-            // Due Date section
-            ListTile(
-              leading: Icon(
-                Icons.calendar_today,
-                color: dueDate.isBefore(DateTime.now()) ? Colors.red : Colors.teal,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
               ),
-              title: Obx(() => Text('Due ${DateFormat.yMMMd().format(selectedDueDate.value)}')),
-              onTap: () async {
-                DateTime? pickedDate = await showDatePicker(
-                  context: context,
-                  initialDate: selectedDueDate.value,
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime(2101),
-                );
-                if (pickedDate != null) {
-                  selectedDueDate.value = pickedDate;
-                  taskController.updateDueDate(taskId, pickedDate); // Update due date in DB
-                }
-              },
-            ),
-            const SizedBox(height: 16),
+              child: IntrinsicHeight(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
 
-            // Add Note section
-            ListTile(
-              leading: const Icon(Icons.note_add_outlined),
-              title: const Text('Add Note'),
-              onTap: () {
-                showNoteDialog(context); // Open note input dialog
-              },
-            ),
-            Obx(
-                  () => taskController.getTaskById(taskId).details != null
-                  ? Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  "Note: ${taskController.getTaskById(taskId).details}",
-                  style: const TextStyle(color: Colors.grey),
+                      const ListTile(
+                        leading: Icon(Icons.notifications_none),
+                        title: Text('Remind Me'),
+                      ),
+                      ListTile(
+                        leading: Icon(
+                          Icons.calendar_month_rounded,
+                          color: widget.dueDate.isBefore(DateTime.now()) ? widget.isCompleted?Colors.green:Colors.red : AppColors.primaryColor,
+                        ),
+                        title: Obx(() => Text('Due ${DateFormat.yMMMd().format(selectedDueDate.value)}',style: TextStyle(color: widget.dueDate.isBefore(DateTime.now()) ?widget.isCompleted?Colors.green:Colors.red : AppColors.primaryColor),),),
+                        onTap: () async {
+                          DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: selectedDueDate.value,
+                            firstDate: DateTime(2024),
+                            lastDate: DateTime(2101),
+                          );
+                          if (pickedDate != null) {
+                            selectedDueDate.value = pickedDate;
+                            taskController.updateDueDate(widget.taskId, pickedDate);
+                          }
+                        },
+                      ),
+
+                      ListTile(
+                        leading: const Icon(Icons.note_outlined),
+                        title: const Text('Add Note'),
+                        onTap: () {
+                          showNoteDialog(context);
+                        },
+                      ),
+                      Obx(
+                            () => taskController.getTaskById(widget.taskId).details != ''
+                            ? Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Container(
+                            width: context.width,
+                            decoration: customBoxDecoration(),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "Note:",
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(taskController.getTaskById(widget.taskId).details,
+                                      style: const TextStyle(color: Colors.grey),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                            : const SizedBox.shrink(),
+                      ),
+                      const SizedBox(height: 16),
+
+                      const Spacer(),
+                      ListTile(
+                        leading: const Icon(Icons.delete_outline, color: Colors.red),
+                        title:const Text('Delete', style: TextStyle(color: Colors.red)),
+                        onTap: () {
+                          showDeleteConfirmation(context);
+                        },
+                      )
+                    ],
+                  ),
                 ),
-              )
-                  : const SizedBox.shrink(),
-            ),
-            const SizedBox(height: 16),
-
-            // Delete button
-            const Spacer(),
-            GestureDetector(
-              onTap: () {
-                showDeleteConfirmation(context);
-              },
-              child: const Row(
-                children: [
-                  Icon(Icons.delete_outline, color: Colors.red),
-                  SizedBox(width: 8),
-                  Text('Delete', style: TextStyle(color: Colors.red)),
-                ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -106,50 +141,88 @@ class TaskOptionsPage extends StatelessWidget {
   void showDeleteConfirmation(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+      ),
       builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
+        return SizedBox(
+          width: context.width,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'Task "$taskId" will be permanently deleted.',
-                style: const TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  taskController.removeTask(taskId); // Call delete task method
-                  Get.back(); // Close modal
-                  Get.back(); // Navigate back after deletion
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Text(
+                      'Task "${widget.taskId}" will be permanently deleted.',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 20),
+                    TextButton(
+                      onPressed: () {
+                        taskController.removeTask(widget.taskId); // Call delete task method
+                        Get.back(); // Close modal
+                        Get.back(); // Navigate back after deletion
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                      child: const Text(
+                        'Delete Task',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                child: const Text('Delete Task', style: TextStyle(color: Colors.white)),
               ),
-              const SizedBox(height: 10),
-              TextButton(
-                onPressed: () {
-                  Get.back(); // Close modal
-                },
-                child: const Text('Cancel', style: TextStyle(color: Colors.teal)),
+              // Divider
+              Container(
+                width: double.infinity,
+                height: 12,
+                color: const Color(0xFFF8F8F8),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextButton(
+                  onPressed: () {
+                    Get.back(); // Close modal
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.primaryColor,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(
+                      color: AppColors.primaryColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
         );
       },
     );
+
   }
 
-  // Method to show note input dialog
   void showNoteDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Add Note"),
+          title: const Text("Add Note"),
           content: TextField(
             controller: noteController,
             maxLines: 2, // Limit the note to 2 lines
@@ -161,16 +234,16 @@ class TaskOptionsPage extends StatelessWidget {
           actions: [
             ElevatedButton(
               onPressed: () {
-                taskController.updateDescription(taskId, noteController.text); // Update description in DB
-                Get.back(); // Close dialog
+                taskController.updateDescription(widget.taskId, noteController.text);
+                Get.back();
               },
-              child: Text("Save"),
+              child: const Text("Save"),
             ),
             TextButton(
               onPressed: () {
-                Get.back(); // Close dialog without saving
+                Get.back();
               },
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
             ),
           ],
         );
